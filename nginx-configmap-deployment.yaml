@@ -1,0 +1,180 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-html-files
+data:
+  blue.html: |
+    <html>
+      <head><title>Blue Pod</title></head>
+      <body style="background-color: blue; color: white;">
+        <h1>Blue Pod</h1>
+      </body>
+    </html>
+  green.html: |
+    <html>
+      <head><title>Green Pod</title></head>
+      <body style="background-color: green; color: white;">
+        <h1>Green Pod</h1>
+      </body>
+    </html>
+  yellow.html: |
+    <html>
+      <head><title>Yellow Pod</title></head>
+      <body style="background-color: yellow; color: black;">
+        <h1>Yellow Pod</h1>
+      </body>
+    </html>
+  red.html: |
+    <html>
+      <head><title>Red Pod</title></head>
+      <body style="background-color: red; color: white;">
+        <h1>Red Pod</h1>
+      </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+      color: blue
+  template:
+    metadata:
+      labels:
+        app: nginx
+        color: blue
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          env:
+            - name: POD_COLOR
+              value: blue
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html-volume
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: blue.html
+      volumes:
+        - name: html-volume
+          configMap:
+            name: nginx-html-files
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: green
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+      color: green
+  template:
+    metadata:
+      labels:
+        app: nginx
+        color: green
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          env:
+            - name: POD_COLOR
+              value: green
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html-volume
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: green.html
+      volumes:
+        - name: html-volume
+          configMap:
+            name: nginx-html-files
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yellow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+      color: yellow
+  template:
+    metadata:
+      labels:
+        app: nginx
+        color: yellow
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          env:
+            - name: POD_COLOR
+              value: yellow
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html-volume
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: yellow.html
+      volumes:
+        - name: html-volume
+          configMap:
+            name: nginx-html-files
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: red
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+      color: red
+  template:
+    metadata:
+      labels:
+        app: nginx
+        color: red
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          env:
+            - name: POD_COLOR
+              value: red
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html-volume
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: red.html
+      volumes:
+        - name: html-volume
+          configMap:
+            name: nginx-html-files
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80               # Port on which the service will be exposed internally
+      targetPort: 80          # Port that the nginx container is listening on
+      nodePort: 30600         # NodePort (external port) to access the service
+  type: NodePort
