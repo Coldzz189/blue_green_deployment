@@ -1,75 +1,113 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: blue  # Shortened name for the blue pod
 spec:
-  replicas: 0
+  replicas: 1        # Set replicas to 1
   selector:
     matchLabels:
       app: nginx
+      color: blue
   template:
     metadata:
       labels:
         app: nginx
+        color: blue
     spec:
       containers:
         - name: nginx
           image: nginx:latest
+          env:
+            - name: POD_COLOR
+              value: blue        # Hardcoding 'blue' for this pod
+          ports:
+            - containerPort: 80
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: blue
-  labels:
-    app: nginx
+  name: green  # Shortened name for the green pod
 spec:
-  containers:
-    - name: nginx
-      image: nginx:latest
+  replicas: 1        # Set replicas to 1
+  selector:
+    matchLabels:
+      app: nginx
+      color: green
+  template:
+    metadata:
+      labels:
+        app: nginx
+        color: green
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          env:
+            - name: POD_COLOR
+              value: green        # Hardcoding 'green' for this pod
+          ports:
+            - containerPort: 80
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: green
-  labels:
-    app: nginx
+  name: yellow  # Shortened name for the yellow pod
 spec:
-  containers:
-    - name: nginx
-      image: nginx:latest
+  replicas: 1        # Set replicas to 1
+  selector:
+    matchLabels:
+      app: nginx
+      color: yellow
+  template:
+    metadata:
+      labels:
+        app: nginx
+        color: yellow
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          env:
+            - name: POD_COLOR
+              value: yellow      # Hardcoding 'yellow' for this pod
+          ports:
+            - containerPort: 80
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: yellow
-  labels:
-    app: nginx
+  name: red  # Shortened name for the red pod
 spec:
-  containers:
-    - name: nginx
-      image: nginx:latest
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: red
-  labels:
-    app: nginx
-spec:
-  containers:
-    - name: nginx
-      image: nginx:latest
+  replicas: 1        # Set replicas to 1
+  selector:
+    matchLabels:
+      app: nginx
+      color: red
+  template:
+    metadata:
+      labels:
+        app: nginx
+        color: red
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          env:
+            - name: POD_COLOR
+              value: red        # Hardcoding 'red' for this pod
+          ports:
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-service
+  name: nginx-service  # One service to route traffic to all the pods
 spec:
   selector:
-    app: nginx
+    app: nginx  # Select all pods with the label `app: nginx`
   ports:
     - protocol: TCP
       port: 80               # Port on which the service will be exposed internally
       targetPort: 80          # Port that the nginx container is listening on
-      nodePort: 30000         # NodePort (external port) to access the service
+      nodePort: 30600         # NodePort (external port) to access the service
   type: NodePort
