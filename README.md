@@ -1,4 +1,4 @@
-# blue_green_deployment
+# Colour_deployment
 
 kubectl cp blue.html blue:/usr/share/nginx/html/index.html
 kubectl cp green.html green:/usr/share/nginx/html/index.html
